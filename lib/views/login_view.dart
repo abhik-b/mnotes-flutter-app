@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../firebase_options.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -34,67 +33,52 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              // TODO: Handle this case.
-              return const CircularProgressIndicator(
-                strokeWidth: 2,
-              );
-            case ConnectionState.waiting:
-              // TODO: Handle this case.
-              return const CircularProgressIndicator(
-                strokeWidth: 2,
-              );
-            case ConnectionState.active:
-              return const CircularProgressIndicator(
-                strokeWidth: 2,
-              );
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      controller: _email,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Enter your Email'),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: TextField(
-                        keyboardType: TextInputType.visiblePassword,
-                        controller: _password,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Enter your password'),
-                      )),
-                  TextButton(
-                    child: const Text('Login'),
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              keyboardType: TextInputType.emailAddress,
+              controller: _email,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(), hintText: 'Enter your Email'),
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                keyboardType: TextInputType.visiblePassword,
+                controller: _password,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter your password'),
+              )),
+          ElevatedButton(
+            child: const Text('Login'),
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
 
-                      final userCredential = await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
-                              email: email, password: password);
-                      print(userCredential);
-                    },
-                  )
-                ],
-              );
-          }
-        },
+              final userCredential = await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(email: email, password: password);
+              print(userCredential);
+            },
+          ),
+          const Text('Or'),
+          TextButton(
+            child: const Text('Register'),
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+          ),
+          const CircularProgressIndicator(
+            strokeWidth: 8,
+          ),
+        ],
       ),
     );
   }
