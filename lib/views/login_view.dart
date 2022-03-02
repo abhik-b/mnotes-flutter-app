@@ -75,9 +75,6 @@ class _LoginViewState extends State<LoginView> {
                   .pushNamedAndRemoveUntil('/register/', (route) => false);
             },
           ),
-          const CircularProgressIndicator(
-            strokeWidth: 8,
-          ),
         ],
       ),
     );
