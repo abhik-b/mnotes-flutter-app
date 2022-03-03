@@ -1,6 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notes/constants/routes.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -57,23 +57,26 @@ class _RegisterViewState extends State<RegisterView> {
                     hintText: 'Enter your password'),
               )),
           ElevatedButton(
-            child: const Text('Sign Up'),
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
+              child: const Text('Sign Up'),
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
 
-              final userCredential = await FirebaseAuth.instance
-                  .createUserWithEmailAndPassword(
-                      email: email, password: password);
-              print(userCredential);
-            },
-          ),
+                await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                        email: email, password: password)
+                    .then((value) {
+                  final user = FirebaseAuth.instance.currentUser;
+                  user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
+                });
+              }),
           const Text('Or'),
           TextButton(
             child: const Text('Login'),
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/login/', (route) => false);
+                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
             },
           )
         ],

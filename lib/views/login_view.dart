@@ -1,6 +1,6 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notes/constants/routes.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -57,32 +57,54 @@ class _LoginViewState extends State<LoginView> {
                     hintText: 'Enter your password'),
               )),
           ElevatedButton(
-            child: const Text('Login'),
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-
-              await FirebaseAuth.instance
-                  .signInWithEmailAndPassword(
-                email: email,
-                password: password,
-              )
-                  .then((value) {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/notes/', (route) => false);
-              }).catchError((error) {});
-            },
-          ),
+              child: const Text('Login'),
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                try {
+                  await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  )
+                      .then((value) {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                  });
+                } on FirebaseAuthException catch (e) {
+                  switch (e.code) {
+                    case 'wrong-password':
+                      showSnackBar(context, 'Wrong Password');
+                      break;
+                    case 'invalid-email':
+                      showSnackBar(context, 'Invalid email');
+                      break;
+                    case 'user-not-found':
+                      showSnackBar(context, 'User Not Found');
+                      break;
+                    default:
+                      showSnackBar(context, 'Something went wrong !!!');
+                  }
+                }
+              }),
           const Text('Or'),
           TextButton(
             child: const Text('Register'),
             onPressed: () {
               Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+                  .pushNamedAndRemoveUntil(registerRoute, (route) => false);
             },
           ),
         ],
       ),
     );
   }
+}
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
+    BuildContext context, String message) {
+  return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(message),
+    backgroundColor: Colors.red,
+  ));
 }

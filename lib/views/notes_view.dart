@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:notes/constants/routes.dart';
+
 enum MenuAction { home, settings, logout }
 
 class NotesView extends StatefulWidget {
@@ -12,6 +14,7 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+  final user = FirebaseAuth.instance.currentUser?.email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +34,7 @@ class _NotesViewState extends State<NotesView> {
                     final shouldLogout = await showLogoutDialog(context);
                     if (shouldLogout) {
                       FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pushReplacementNamed('/login/');
+                      Navigator.of(context).pushReplacementNamed(loginRoute);
                     }
 
                     break;
@@ -53,6 +56,7 @@ class _NotesViewState extends State<NotesView> {
                   ])
         ],
       ),
+      body: Text('hello $user'),
     );
   }
 }
